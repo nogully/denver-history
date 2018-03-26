@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- node
+services:
+- postgresql
+before_script:
+- psql -c 'create database denver_history;' -U postgres
+notifications:
+- email: false
+deploy:
+  provider: heroku
+  api_key:
+    secure: VnAj+tNueX1aHcBEbk2/sRShYdzRCA7b11U8E8TJdYerOEVUADbphwTjReP7/pQ96UPnYWNSrmtS4fSDK66AtbBlFAmM9DglySsouvSgRODUbpFLxik+CVF6mRpveRdV7ZMg5mfLMuPrE7JpDUC4RDOhn1dohN1wVDn0ai7/5w8TkGTpunO1khQweLpkw6Eyq4uV6/bxmM5RcwtvVysmKCrXlw5ZnUDH6EtFGX3asSIiVJ5ezWHn3wwJC4PUOdhCQtdJ4Q6VMwUDMj8IwYf7Yd5dqipJxMkUIVROI6zF0HUffIZekdTD2YuyLdGA66AwcVzRjdysB5m60ygHae/67MftPoIhkToBQoL7zgWKxmaik5bI5/D7QB4amfe471G0iC32W57fPLJ0S1DaB/LWbvPf7hLXnkjLuMl27N50Naa/2nS/0aSsRldtRfHbTBZVh4bNFZ4HeP4gj4YFCNay0kcRmWLrfHA2ciTqtmYGsm8FJSnAHksCoDBX/Ioljo0J0NHHiJ0NUUySfZmfZDT322crE/wox5w4vwDNEmjZpUqut+iW8YySW+5QtMQWMlBPdyHdZAz9nuTSNsRCLJWZBaI6cyNTJA+itwS9uyoPCXoEZudarAHNeTseyAT6M6PR4swOWoHeCf3I+K9xpOiwAQ9/HaCv5NcuF7DbewAGItw=
+  app: denver-history
+  skip_cleanup: true
