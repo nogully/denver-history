@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/nogully/denver-history/issues"
   },
-  "homepage": "https://github.com/nogully/denver-history#readme"
+  "homepage": "https://github.com/nogully/denver-history#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
