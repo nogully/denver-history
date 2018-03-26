@@ -4,6 +4,6 @@ node_js:
 services:
 - postgresql
 before_script:
-- psql -c 'create database denver_history;' -U postgres
+- psql -c 'create database denver_history_test;' -U postgres
 notifications:
 - email: false
