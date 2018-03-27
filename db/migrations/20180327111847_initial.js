@@ -7,11 +7,14 @@ exports.up = function(knex, Promise) {
       table.string('AKA_NAME');
       table.integer('ORD_NUM');
       table.integer('ORD_YEAR');
+      table.integer('SITUS_NUM');
+      table.string('SITUS_ST');
+      table.string('SITUS_TYPE');
       table.string('ADDRESS_LINE1');
       table.string('ADDRESS_LINE2');
-      table.string('HISTORIC_DIST');
+      table.integer('HISTORIC_DIST');
       table.foreign('HISTORIC_DIST')
-        .references('districts.name');
+        .references('districts.ID');
       table.string('STATE_HIST_NUM');
       table.string('YEAR_BUILT');
       table.string('ARCH_BLDR');
@@ -35,7 +38,7 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
-    knex.schema.dropTable('footnotes'),
-    knex.schema.dropTable('papers')
+    knex.schema.dropTable('districts'),
+    knex.schema.dropTable('buildings')
   ]);
 };
