@@ -1,12 +1,14 @@
 module.exports = {
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/publications',
+    connection: 'postgres://localhost/denver_history',
     useNullAsDefault: true, 
     migrations: {
       directory: './db/migrations'
     },
-    useNullAsDefault: true
+    seeds: {
+      directory: './db/seeds/dev'
+    }
   }, 
   test: {
     client: 'pg',
