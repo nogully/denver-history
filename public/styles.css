@@ -1,4 +1,7 @@
-body {
+body, 
+header, 
+main, 
+form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -6,10 +9,39 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+main {
+  margin-top: 20px;
+}
+
 h1 {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 p {
   font-weight: 300;
+  margin: 0px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+#form-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+#label-wrapper {
+  align-items: flex-end;
+}
+
+input, label {
+  margin: 10px;
 }
