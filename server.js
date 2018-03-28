@@ -32,7 +32,7 @@ app.get('/api/v1/districts', (request, response) => {
 app.get('/api/v1/districts/:id', (request, response) => {
   database('districts').where('id', request.params.id).select()
     .then(district => {
-      if (district) {
+      if (district.length) {
         response.status(200).json(district); 
       } else {
         response.status(404).send({ error: 'That district does not exist'});
@@ -43,14 +43,19 @@ app.get('/api/v1/districts/:id', (request, response) => {
     })
 })
 
-
 app.get('/api/v1/districts/:id/buildings', (request, response) => {
-  database('buildings').where('historic_dist', request.params.id).select()
-    .then(districts => {
-      response.status(200).json(districts);
+  const { id } = request.params;
+
+  database('buildings').where('historic_dist', id).select()
+    .then(buildings => {
+      if (buildings.length) {
+        response.status(200).json(buildings);
+      } else {
+        response.status(404).send({ error: 'No buildings found'});
+      }
     })
     .catch(error => {
-      response.status(500).json(districts);
+      response.status(500).json({error});
     })
 })
 
@@ -100,6 +105,9 @@ app.patch('/api/v1/buildings/:id/description', (request, response) => {
       } else {
         return response.status(404).send({error: 'That building does not exist'})
       }
+    })
+    .catch( error => {
+      response.status(500).json({error})
     })
 })
 
