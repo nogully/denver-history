@@ -13,6 +13,12 @@ module.exports = {
   test: {
     client: 'pg',
     connection: 'postgres://localhost/denver_history_test',
-    useNullAsDefault: true
+    useNullAsDefault: true,
+    migrations: {
+      directory: './db/migrations'
+    },
+    seeds: {
+      directory: './db/seeds/test'
+    }
   }
 };
