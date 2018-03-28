@@ -145,7 +145,63 @@ describe('API Routes', () => {
           .get('/api/v1/buildings/999')
           .then(response => {
             response.should.have.status(404);
-            response.body.error.should.equal('That building is not in the database')
+            response.body.error.should.equal('That building does not exist')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+    })
+    describe('PATCH /api/v1/buildings/:id/description', () => {
+      it('should return a success message when the description is changed', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/0/description')
+          .send({description: 'asdf'})
+          .then( response => {
+            response.should.have.status(200);
+            response.body.should.equal('description changed successfully')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+      it('should return a 422 error if there is no description in the body', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/0/description')
+          .send({
+            // description
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('Description is required')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+      it('should return a 422 error if the description is empty', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/0/description')
+          .send({
+            description: ''
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('Description is required')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+      it('should return a 404 error if the target building doesnt exist', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/999/description')
+          .send({
+            description: 'asdf'
+          })
+          .then(response => {
+            response.should.have.status(404);
+            response.body.error.should.equal('That building does not exist')
           })
           .catch( error => {
             throw error;
