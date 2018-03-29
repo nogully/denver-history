@@ -29,7 +29,7 @@ const checkAuth = (request, response, next) => {
     if ( email.toLowerCase().includes('@turing.io') ) {
       next();
     } else {
-      return reponse.status(403).send("Your email is not authorized.")
+      return reponse.status(403).send("Your email is not authorized")
     }
   } catch(error) {
     return response.status(403).send("Invalid token")
@@ -69,7 +69,7 @@ app.get('/api/v1/districts/:id', (request, response) => {
       if (district.length) {
         response.status(200).json(district); 
       } else {
-        response.status(404).send({ error: 'That district does not exist.'});
+        response.status(404).send({ error: 'That district does not exist'});
       }
     })
     .catch(error => {
@@ -85,7 +85,7 @@ app.get('/api/v1/districts/:id/buildings', (request, response) => {
       if (buildings.length) {
         response.status(200).json(buildings);
       } else {
-        response.status(404).send({ error: 'No buildings found.'});
+        response.status(404).send({ error: 'No buildings found'});
       }
     })
     .catch(error => {
@@ -97,12 +97,12 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
   const { name } = request.body;
 
   if ( !name ) {
-    return response.status(422).send({error: 'Please name your district.'})
+    return response.status(422).send({error: 'Please name your district'})
   }
 
   database('districts').insert({name}, 'id')
     .then(district => {
-      response.status(201).json(`You created a district, ${name}, with an id of ${district[0]}.`)
+      response.status(201).json(`You created a district, ${name} with an id of ${district[0]}`)
     })
     .catch( error => {
       response.status(500).send({error})
@@ -112,16 +112,16 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
 app.delete('/api/v1/districts', checkAuth, (request, response) => {
   const { id } = request.body;
   if (!id) {
-    return response.status(422).send({error: 'Please include the id of the district to delete.'})
+    return response.status(422).send({error: 'Please include the id of the district to delete'})
   }
 
   database('districts').where('id', id).del()
     .then(districtId => {
       if (districtId) {
-        response.status(202).json(`You deleted district ${id}.`)
+        response.status(202).json(`You deleted district ${id}`)
       } else {
         response.status(404).json({
-          error: `Could not find district with id ${id}.`
+          error: `Could not find district with id ${id}`
         })
       }
     })
@@ -151,7 +151,7 @@ app.get('/api/v1/buildings/:id', (request, response) => {
       if (result.length) {
         return response.status(200).json(result)
       } else {
-        return response.status(404).send({error: 'That building does not exist.'})
+        return response.status(404).send({error: 'That building does not exist'})
       }
     })
     .catch( error => {
@@ -164,7 +164,7 @@ app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) =>
   const { description } = request.body;
 
   if ( !description || !description.length) {
-    return response.status(422).send({error: 'Description is required.'})
+    return response.status(422).send({error: 'Description is required'})
   }
 
   database('buildings').where('id', id).select()
@@ -172,10 +172,10 @@ app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) =>
       if (result.length) {
         database('buildings').where('id', id).update({description})
           .then(rows => {
-             return response.status(200).json(`Description changed successfully on ${id}`)
+             return response.status(200).json('description changed successfully')
           })
       } else {
-        return response.status(404).send({error: 'That building does not exist.'})
+        return response.status(404).send({error: 'That building does not exist'})
       }
     })
     .catch( error => {
@@ -188,7 +188,7 @@ app.patch('/api/v1/buildings/:id/aka_name', checkAuth, (request, response) => {
   const { aka_name } = request.body;
 
   if ( !aka_name || !aka_name.length) {
-    return response.status(422).send({error: 'aka_name is required.'})
+    return response.status(422).send({error: 'aka_name is required'})
   }
 
   database('buildings').where('id', id).select()
@@ -196,10 +196,10 @@ app.patch('/api/v1/buildings/:id/aka_name', checkAuth, (request, response) => {
       if (result.length) {
         database('buildings').where('id', id).update({aka_name})
           .then(rows => {
-             return response.status(200).json(`aka_name changed successfully on ${id}.`)
+             return response.status(200).json(`aka_name changed successfully on ${id}`)
           })
       } else {
-        return response.status(404).send({error: 'That building does not exist.'})
+        return response.status(404).send({error: 'That building does not exist'})
       }
     })
     .catch( error => {
@@ -221,7 +221,7 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
   database('buildings').insert(payload, 'id')
     .then(building => {
       return response.status(201)
-        .json(`You created a building with an id of ${building[0]}.`);
+        .json(`You created a building with an id of ${building[0]}`);
     })
     .catch( error => {
       return response.status(500).json({error});
@@ -231,16 +231,16 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
 app.delete('/api/v1/buildings', checkAuth, (request, response) => {
   const { id } = request.body;
   if (!id) {
-    return response.status(422).send({error: 'Please include the id of the building to delete.'})
+    return response.status(422).send({error: 'Please include the id of the building to delete'})
   }
 
   database('buildings').where('id', id).del()
     .then(buildingId => {
       if (buildingId) {
-        response.status(202).json(`You deleted building ${id}.`)
+        response.status(202).json(`You deleted building ${id}`)
       } else {
         response.status(404).json({
-          error: `Could not find building with id ${id}.`
+          error: `Could not find building with id ${id}`
         })
       }
     })
