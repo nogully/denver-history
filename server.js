@@ -128,10 +128,11 @@ app.get('/api/v1/search', (request, response) => {
       if (result.length) {
         response.status(200).json(result);
       } else {
-        response.status(404).json({error: `Property ${key} with ${value} not found.`})
+        response.status(404).json({error: `Property '${key}' with value '${value}' not found.`})
       }
     })
-    .catch( error => response.status(500).send({error}) )
+    .catch( error => response.status(500).send({"Database error": "Search parameters must be correctly defined. SQL says: " + error.message + ". " + "Please see documentation." }) 
+    )
 })
 
 // BUILDINGS ---------------------------------------
