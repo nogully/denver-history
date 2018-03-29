@@ -40,13 +40,14 @@ const checkAuth = (request, response, next) => {
 
 app.post('/authenticate', (request, response) => {
   const payload = request.body;
+  const requiredParameters = ['email', 'appName'];
 
-  for (const requiredParameter of ['email', 'appName']) {
-    if (!payload[requiredParameter]) {
+  requiredParameters.forEach((param) => {
+    if (!payload[param]) {
       return response.status(422)
-        .send({ error: `Expected format: {email: <string>, appName: <string> }. You're missing an ${requiredParameter} property.` });
+        .send({ error: `Expected format: {email: <string>, appName: <string> }. You're missing an ${param} property.` });
     }
-  }
+  });
   const token = jwt.sign(payload, secretKey);
   return response.status(201).json({ token });
 });
@@ -61,7 +62,7 @@ app.get('/api/v1/districts', (request, response) => {
 
 app.get('/api/v1/districts/:id', (request, response) => {
   database('districts').where('id', request.params.id).select()
-    .then(district => {
+    .then((district) => {
       if (district.length) {
         response.status(200).json(district);
       } else {
@@ -75,7 +76,7 @@ app.get('/api/v1/districts/:id/buildings', (request, response) => {
   const { id } = request.params;
 
   database('buildings').where('historic_dist', id).select()
-    .then(buildings => {
+    .then((buildings) => {
       if (buildings.length) {
         response.status(200).json(buildings);
       } else {
@@ -93,30 +94,28 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
   }
 
   database('districts').insert({ name }, 'id')
-    .then(district => response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`))
+    .then((district) => {
+      response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`);
+    })
     .catch(error => response.status(500).send({ error }));
 });
 
 app.delete('/api/v1/districts', checkAuth, (request, response) => {
   const { id } = request.body;
   if (!id) {
-    return response.status(422).send({error: 'Please include the id of the district to delete'})
+    return response.status(422).send({ error: 'Please include the id of the district to delete' });
   }
 
   database('districts').where('id', id).del()
-    .then(districtId => {
+    .then((districtId) => {
       if (districtId) {
-        response.status(202).json(`You deleted district ${id}`)
+        response.status(202).json(`You deleted district ${id}`);
       } else {
-        response.status(404).json({
-          error: `Could not find district with id ${id}`
-        })
+        response.status(404).json({ error: `Could not find district with id ${id}` });
       }
     })
-    .catch(error => {
-      response.status(500).send({error})
-    })
-})
+    .catch(error => response.status(500).send({ error }));
+});
 
 
 // BUILDINGS ---------------------------------------
@@ -131,7 +130,7 @@ app.get('/api/v1/buildings/:id', (request, response) => {
   const { id } = request.params;
 
   database('buildings').where('id', id).select()
-    .then(result => {
+    .then((result) => {
       if (result.length) {
         response.status(200).json(result);
       } else {
@@ -150,7 +149,7 @@ app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) =>
   }
 
   database('buildings').where('id', id).select()
-    .then(result => {
+    .then((result) => {
       if (result.length) {
         database('buildings').where('id', id).update({ description })
           .then(() => response.status(200).json('description changed successfully'));
@@ -163,33 +162,29 @@ app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) =>
 
 app.patch('/api/v1/buildings/:id/aka_name', checkAuth, (request, response) => {
   const { id } = request.params;
-  const { aka_name } = request.body;
+  const { akaName } = request.body;
 
-  if ( !aka_name || !aka_name.length) {
-    return response.status(422).send({error: 'aka_name is required'})
+  if (!akaName || !akaName.length) {
+    return response.status(422).send({ error: 'aka_name is required' });
   }
 
   database('buildings').where('id', id).select()
-    .then( result => {
+    .then((result) => {
       if (result.length) {
-        database('buildings').where('id', id).update({aka_name})
-          .then(rows => {
-             return response.status(200).json(`aka_name changed successfully on ${id}`)
-          })
+        database('buildings').where('id', id).update({ aka_name: akaName })
+          .then(() => response.status(200).json(`aka_name changed successfully on ${id}`));
       } else {
-        return response.status(404).send({error: 'That building does not exist'})
+        return response.status(404).send({ error: 'That building does not exist' });
       }
     })
-    .catch( error => {
-      response.status(500).json({error})
-    })
-})
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.post('/api/v1/buildings', checkAuth, (request, response) => {
   const payload = request.body;
   delete payload.token;
   const desiredParams = ['ldmk_num', 'ldmk_name', 'aka_name', 'ord_num', 'ord_year', 'address_line1', 'address_line2', 'situs_num', 'situs_dir', 'situs_st', 'situs_type', 'state_hist_num', 'year_built', 'arch_bldr', 'document', 'photo_link', 'notes', 'gis_notes', 'description', 'address_id', 'historic_dist'];
-  Object.keys(payload).forEach(key => {
+  Object.keys(payload).forEach((key) => {
     if (!desiredParams.includes(key)) {
       return response.status(422)
         .send({
@@ -206,23 +201,21 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
 app.delete('/api/v1/buildings', checkAuth, (request, response) => {
   const { id } = request.body;
   if (!id) {
-    return response.status(422).send({error: 'Please include the id of the building to delete'})
+    return response.status(422).send({
+      error: 'Please include the id of the building to delete',
+    });
   }
 
   database('buildings').where('id', id).del()
-    .then(buildingId => {
+    .then((buildingId) => {
       if (buildingId) {
-        response.status(202).json(`You deleted building ${id}`)
+        response.status(202).json(`You deleted building ${id}`);
       } else {
-        response.status(404).json({
-          error: `Could not find building with id ${id}`
-        })
+        response.status(404).json({ error: `Could not find building with id ${id}` });
       }
     })
-    .catch(error => {
-      response.status(500).send({error})
-    })
-})
+    .catch(error => response.status(500).send({ error }));
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);

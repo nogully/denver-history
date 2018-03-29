@@ -2,7 +2,6 @@ const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
-// const environment = process.env.NODE_ENV || 'test';
 const configuration = require('../knexfile')['test'];
 const database = require('knex')(configuration);
 
@@ -13,14 +12,19 @@ const wrongEmailToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZG
 chai.use(chaiHttp);
 
 before(() => {
-  return database.migrate.rollback()
-    .then(() => {
-      return database.migrate.latest()
-    })
 })
 
-beforeEach(() => {
-  return database.seed.run();
+beforeEach(done => {
+  database.migrate.rollback()
+    .then(() => {
+      database.migrate.latest()
+        .then(() => {
+          return database.seed.run()
+            .then(() => {
+              done();
+            })
+        })
+    })
 })
 
 describe('Client Routes', () => {
@@ -29,7 +33,7 @@ describe('Client Routes', () => {
 
 describe('API Routes', () => {
   describe('POST /authenticate', () => {
-    it.skip('should return a status of 201 and a JWT', () => {
+    it('should return a status of 201 and a JWT', () => {
       return chai.request(server)
         .post('/authenticate')
         .send({
@@ -40,7 +44,7 @@ describe('API Routes', () => {
           response.should.have.status(201);
           response.should.be.an('object')
           response.body.should.have.property('token');
-          response.body.token.should.equal('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZGZAdHVyaW5nLmlvIiwiYXBwTmFtZSI6ImNvb2xTdHVmZiIsImlhdCI6MTUyMjMxMDUwN30.PfbHv2sO5EYRJRfvNQnpKohwmdCay_y0ze96wrMBgng')
+          response.body.token.should.include('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
         })
     })
   })
@@ -56,7 +60,7 @@ describe('API Routes', () => {
             response.body.should.be.an('array');
             response.body.length.should.equal(2);
             response.body[0].should.have.property('id');
-            response.body[0].id.should.equal(0);
+            response.body[0].id.should.equal(1);
             response.body[0].should.have.property('name');
             response.body[0].name.should.equal('Wyman');
           })
@@ -66,17 +70,17 @@ describe('API Routes', () => {
       })
     })
 
-    describe('GET /api/v1/buildings/:id', () => {
+    describe('GET /api/v1/districts/:id', () => {
       it('should return a specific district', () => {
         return chai.request(server)
-          .get('/api/v1/districts/0')
+          .get('/api/v1/districts/1')
           .then(response => {
             response.should.have.status(200);
             response.should.be.json;
             response.body.should.be.an('array');
             response.body.length.should.equal(1);
             response.body[0].should.have.property('id');
-            response.body[0].id.should.equal(0);
+            response.body[0].id.should.equal(1);
             response.body[0].should.have.property('name');
             response.body[0].name.should.equal('Wyman');
           })
@@ -100,14 +104,14 @@ describe('API Routes', () => {
     describe('GET /api/v1/districts/:id/buildings', () => {
       it('should return all buildings from a specific district', () => {
         return chai.request(server)
-          .get('/api/v1/districts/0/buildings')
+          .get('/api/v1/districts/1/buildings')
           .then(response => {
             response.should.have.status(200);
             response.should.be.json;
             response.body.should.be.an('array');
             response.body.length.should.equal(1);
             response.body[0].should.have.property('id');
-            response.body[0].id.should.equal(0);
+            response.body[0].id.should.equal(1);
             response.body[0].should.have.property('ldmk_num');
             response.body[0].ldmk_num.should.equal(93);
             response.body[0].should.have.property('ldmk_name');
@@ -131,7 +135,7 @@ describe('API Routes', () => {
             response.body[0].should.have.property('situs_type');
             response.body[0].situs_type.should.equal('ST');
             response.body[0].should.have.property('historic_dist');
-            response.body[0].historic_dist.should.equal(0);
+            response.body[0].historic_dist.should.equal(1);
             response.body[0].should.have.property('state_hist_num');
             response.body[0].state_hist_num.should.equal('5DV.5811');
             response.body[0].should.have.property('year_built');
@@ -169,17 +173,16 @@ describe('API Routes', () => {
     })
 
     describe('POST /api/v1/districts', () => {
-      it.skip('should create a district if the token is authorized', () => {
+      it('should create a district if the token is authorized', () => {
         return chai.request(server)
           .post('/api/v1/districts')
           .send({
-            id: 2,
             token: goodToken,
             name: 'funky town'
           })
           .then( response => {
             response.should.have.status(201);
-            response.body.should.equal('You created a district, funky town with an ID of 2')
+            response.body.should.equal('You created a district, funky town with an ID of 3')
           })
           .catch( error => {
             throw error;
@@ -258,7 +261,7 @@ describe('API Routes', () => {
             response.body.should.be.an('array');
             response.body.length.should.equal(2);
             response.body[0].should.have.property('id');
-            response.body[0].id.should.equal(0);
+            response.body[0].id.should.equal(1);
             response.body[0].should.have.property('ldmk_num');
             response.body[0].ldmk_num.should.equal(93);
             response.body[0].should.have.property('ldmk_name');
@@ -282,7 +285,7 @@ describe('API Routes', () => {
             response.body[0].should.have.property('situs_type');
             response.body[0].situs_type.should.equal('ST');
             response.body[0].should.have.property('historic_dist');
-            response.body[0].historic_dist.should.equal(0);
+            response.body[0].historic_dist.should.equal(1);
             response.body[0].should.have.property('state_hist_num');
             response.body[0].state_hist_num.should.equal('5DV.5811');
             response.body[0].should.have.property('year_built');
@@ -312,14 +315,14 @@ describe('API Routes', () => {
     describe('GET /api/v1/buildings/:id', () => {
       it('should return a specific building', () => {
         return chai.request(server)
-          .get('/api/v1/buildings/0')
+          .get('/api/v1/buildings/1')
           .then(response => {
             response.should.have.status(200);
             response.should.be.json;
             response.body.should.be.an('array');
             response.body.length.should.equal(1);
             response.body[0].should.have.property('id');
-            response.body[0].id.should.equal(0);
+            response.body[0].id.should.equal(1);
             response.body[0].should.have.property('ldmk_num');
             response.body[0].ldmk_num.should.equal(93);
             response.body[0].should.have.property('ldmk_name');
@@ -343,7 +346,7 @@ describe('API Routes', () => {
             response.body[0].should.have.property('situs_type');
             response.body[0].situs_type.should.equal('ST');
             response.body[0].should.have.property('historic_dist');
-            response.body[0].historic_dist.should.equal(0);
+            response.body[0].historic_dist.should.equal(1);
             response.body[0].should.have.property('state_hist_num');
             response.body[0].state_hist_num.should.equal('5DV.5811');
             response.body[0].should.have.property('year_built');
@@ -381,9 +384,9 @@ describe('API Routes', () => {
     })
 
     describe('PATCH /api/v1/buildings/:id/description', () => {
-      it.skip('should return a success message when the description is changed', () => {
+      it('should return a success message when the description is changed', () => {
         return chai.request(server)
-          .patch('/api/v1/buildings/0/description')
+          .patch('/api/v1/buildings/1/description')
           .send({
             token: goodToken,
             description: 'asdf'
@@ -396,7 +399,7 @@ describe('API Routes', () => {
             throw error;
           })
       })
-      it.skip('should return a 422 error if there is no description in the body', () => {
+      it('should return a 422 error if there is no description in the body', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/0/description')
           .send({
@@ -411,7 +414,7 @@ describe('API Routes', () => {
             throw error;
           })
       })
-      it.skip('should return a 422 error if the description is empty', () => {
+      it('should return a 422 error if the description is empty', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/0/description')
           .send({
@@ -426,7 +429,7 @@ describe('API Routes', () => {
             throw error;
           })
       })
-      it.skip('should return a 404 error if the target building doesnt exist', () => {
+      it('should return a 404 error if the target building doesnt exist', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/999/description')
           .send({
@@ -444,7 +447,7 @@ describe('API Routes', () => {
     })
 
     describe('POST /api/v1/buildings', () => {
-      it.skip('should create a new building', () => {
+      it('should create a new building', () => {
         return chai.request(server)
           .post('/api/v1/buildings')
           .send({
