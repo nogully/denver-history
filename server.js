@@ -93,6 +93,22 @@ app.get('/api/v1/districts/:id/buildings', (request, response) => {
     })
 })
 
+app.post('/api/v1/districts', checkAuth, (request, response) => {
+  const { name } = request.body;
+
+  if ( !name ) {
+    return response.status(422).send({error: 'Please name your district'})
+  }
+
+  database('districts').insert({name}, 'id')
+    .then(district => {
+      response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`)
+    })
+    .catch( error => {
+      response.status(500).send({error})
+    })
+})
+
 
 // BUILDINGS ---------------------------------------
 
@@ -122,7 +138,7 @@ app.get('/api/v1/buildings/:id', (request, response) => {
     })
 })
 
-app.patch('/api/v1/buildings/:id/description', (request, response) => {
+app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) => {
   const { id } = request.params;
   const { description } = request.body;
 
