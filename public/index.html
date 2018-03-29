@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-  <title>Denver Landmarks API</title>
-</head>
-<body>
-  <header>
-    <h1>Denver Landmarks API</h1>
-    <p>A list of buildings that belong to the National Register of Historic Places </p>
-    <p>In the City and County of Denver</p>
-  </header>
-  <main>
-    <h3>Apply for a token in order to edit the information:</h3>
-    <form onsubmit="">
-      <div id="form-wrapper" >
-        <div class="wrapper" id="label-wrapper">
-          <label for="email-input">Email:</label>
-          <label for="app-input">App Name:</label>
+  <head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <title>Denver Landmarks API</title>
+  </head>
+  <body>
+    <header>
+      <h1>Denver Landmarks API</h1>
+      <p>A list of buildings that belong to the National Register of Historic Places </p>
+      <p>In the City and County of Denver</p>
+    </header>
+    <main>
+      <h3>Apply for a token in order to edit the information:</h3>
+      <form>
+        <div id="form-wrapper" >
+          <div class="wrapper" id="label-wrapper">
+            <label for="email-input">Turing Email:</label>
+            <label for="app-input">App Name:</label>
+          </div>
+          <div class="wrapper" id="input-wrapper">
+            <input type="email" id="email-input" />
+            <input type="text" id="app-input" />
+          </div>
         </div>
-        <div class="wrapper" id="input-wrapper">
-          <input type="text" id="email-input" />
-          <input type="text" id="app-input" />
-        </div>
-      </div>
-      <input type="submit">
-    </form>
-  <main>
-</body>
+        <input type="submit">
+      </form>
+    <main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+  </body>
 </html>
