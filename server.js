@@ -20,7 +20,7 @@ app.use(express.static('public'));
 const checkAuth = (request, response, next) => {
   const { token } = request.body;
   if (!token) {
-    return response.status(403).send('You must be authorized to access this endpoint.');
+    return response.status(403).send({error: 'You must be authorized to access this endpoint.'});
   } 
   try {
     const decoded = jwt.verify(token, secretKey)
@@ -29,16 +29,15 @@ const checkAuth = (request, response, next) => {
     if ( email.toLowerCase().includes('@turing.io') ) {
       next();
     } else {
-      return reponse.status(403).send("Your email is not authorized")
+      return response.status(403).send({error: "Your email is not authorized"})
     }
   } catch(error) {
-    return response.status(403).send("Invalid token")
+    return response.status(403).send({error: "Invalid token"})
   }
 }
 
 app.post('/authenticate', (request, response) => {
   const payload = request.body;
-  console.log(payload);
 
   for (let requiredParameter of ['email', 'appName']) {
     if (!payload[requiredParameter]) {
@@ -138,7 +137,7 @@ app.get('/api/v1/buildings/:id', (request, response) => {
     })
 })
 
-app.patch('/api/v1/buildings/:id/description', (request, response) => {
+app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) => {
   const { id } = request.params;
   const { description } = request.body;
 
