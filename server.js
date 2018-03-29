@@ -138,7 +138,7 @@ app.get('/api/v1/buildings/:id', (request, response) => {
     })
 })
 
-app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) => {
+app.patch('/api/v1/buildings/:id/description', (request, response) => {
   const { id } = request.params;
   const { description } = request.body;
 
