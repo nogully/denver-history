@@ -15,14 +15,11 @@ app.locals.title = 'Denver History';
 
 app.use(express.static('public'));
 
-app.get('/', (request, response) => {
-  response.send('Ready to explore?');
-});
-
 // AUTHENTICATION ----------------------
 
 app.post('/authenticate', (request, response) => {
   const payload = request.body;
+  console.log(payload);
 
   for (let requiredParameter of ['email', 'appName']) {
     if (!payload[requiredParameter]) {
@@ -31,8 +28,8 @@ app.post('/authenticate', (request, response) => {
           error: `Expected format: {email: <string>, appName: <string> }. You're missing an ${requiredParameter} property.`})
     }
   }
-  const token = jwt.sign(payload, secretKey)
-  return response.status(201).json({token})
+  const token = jwt.sign(payload, secretKey);
+  return response.status(201).json({token});
 })
  
 // DISTRICTS ---------------------------
