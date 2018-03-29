@@ -17,6 +17,25 @@ app.use(express.static('public'));
 
 // AUTHENTICATION ----------------------
 
+const checkAuth = (request, response, next) => {
+  const { token } = request.body;
+  if (!token) {
+    return response.status(403).send('You must be authorized to access this endpoint.');
+  } 
+  try {
+    const decoded = jwt.verify(token, secretKey)
+    const { email } = decoded;
+
+    if ( email.toLowerCase().includes('@turing.io') ) {
+      next();
+    } else {
+      return reponse.status(403).send("Your email is not authorized")
+    }
+  } catch(error) {
+    return response.status(403).send("Invalid token")
+  }
+}
+
 app.post('/authenticate', (request, response) => {
   const payload = request.body;
   console.log(payload);
@@ -124,6 +143,27 @@ app.patch('/api/v1/buildings/:id/description', (request, response) => {
     })
     .catch( error => {
       response.status(500).json({error})
+    })
+})
+
+app.post('/api/v1/buildings', checkAuth, (request, response) => {
+  const payload = request.body;
+  delete payload.token;
+  const desiredParams = ['ldmk_num', 'ldmk_name', 'aka_name', 'ord_num', 'ord_year', 'address_line1', 'address_line2', 'situs_num', 'situs_dir', 'situs_st', 'situs_type', 'state_hist_num', 'year_built', 'arch_bldr', 'document', 'photo_link', 'notes', 'gis_notes', 'description', 'address_id', 'historic_dist'] 
+  Object.keys(payload).forEach(key => {
+    if (!desiredParams.includes(key)) {
+      return response.status(422)
+      .send({
+        error: `Expected keys are: 'ldmk_num', 'ldmk_name', 'aka_name', 'ord_num', 'ord_year', 'address_line1', 'address_line2', 'situs_num', 'situs_dir', 'situs_st', 'situs_type', 'state_hist_num', 'year_built', 'arch_bldr', 'document', 'photo_link', 'notes', 'gis_notes', 'description', 'address_id', 'historic_dist'. You entered a ${key} property.`})
+    } 
+  }) 
+  database('buildings').insert(payload, 'id')
+    .then(building => {
+      return response.status(201)
+        .json(`You made a building with an id of ${building[0]}`);
+    })
+    .catch( error => {
+      return response.status(500).json({error});
     })
 })
 
