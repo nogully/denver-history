@@ -93,7 +93,9 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
   }
 
   database('districts').insert({ name }, 'id')
-    .then(district => response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`))
+    .then(district => {
+      response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`)
+    })
     .catch(error => response.status(500).send({ error }));
 });
 

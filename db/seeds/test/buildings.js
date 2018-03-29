@@ -6,18 +6,15 @@ exports.seed = (knex, Promise) => {
       return Promise.all([
         knex('districts').insert([
           { 
-            id: 0,
             name: 'Wyman'
           },
           {
-            id: 1,
             name: 'East 7th Avenue'
           }
         ], 'id')
         .then( district => {
           return knex('buildings').insert([
             {
-              id: 0,
               ldmk_num: 93,
               ldmk_name: '1437 High Street',
               aka_name: 'Watson House',
@@ -41,7 +38,6 @@ exports.seed = (knex, Promise) => {
               address_id: null
             },
             {
-              id: 1,
               ldmk_num: 94,
               ldmk_name: 'Kerr House',
               aka_name: null,

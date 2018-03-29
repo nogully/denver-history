@@ -2,7 +2,7 @@ exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('districts', function(table) {
       table.increments('id').primary();
-      table.string('name').unique();
+      table.string('name');
       table.timestamps(true, true);
     }),
     knex.schema.createTable('buildings', function(table) {
