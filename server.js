@@ -102,9 +102,30 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
 
   database('districts').insert({name}, 'id')
     .then(district => {
-      response.status(201).json(`You created a district, ${name} with an ID of ${district[0]}`)
+      response.status(201).json(`You created a district, ${name} with an id of ${district[0]}`)
     })
     .catch( error => {
+      response.status(500).send({error})
+    })
+})
+
+app.delete('/api/v1/districts', checkAuth, (request, response) => {
+  const { id } = request.body;
+  if (!id) {
+    return response.status(422).send({error: 'Please include the id of the district to delete'})
+  }
+
+  database('districts').where('id', id).del()
+    .then(districtId => {
+      if (districtId) {
+        response.status(202).json(`You deleted district ${id}`)
+      } else {
+        response.status(404).json({
+          error: `Could not find district with id ${id}`
+        })
+      }
+    })
+    .catch(error => {
       response.status(500).send({error})
     })
 })
@@ -176,10 +197,31 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
   database('buildings').insert(payload, 'id')
     .then(building => {
       return response.status(201)
-        .json(`You made a building with an id of ${building[0]}`);
+        .json(`You created a building with an id of ${building[0]}`);
     })
     .catch( error => {
       return response.status(500).json({error});
+    })
+})
+
+app.delete('/api/v1/buildings', checkAuth, (request, response) => {
+  const { id } = request.body;
+  if (!id) {
+    return response.status(422).send({error: 'Please include the id of the building to delete'})
+  }
+
+  database('buildings').where('id', id).del()
+    .then(buildingId => {
+      if (buildingId) {
+        response.status(202).json(`You deleted building ${id}`)
+      } else {
+        response.status(404).json({
+          error: `Could not find building with id ${id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).send({error})
     })
 })
 
