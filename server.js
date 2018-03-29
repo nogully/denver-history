@@ -97,6 +97,27 @@ app.post('/api/v1/districts', checkAuth, (request, response) => {
     .catch(error => response.status(500).send({ error }));
 });
 
+app.delete('/api/v1/districts', checkAuth, (request, response) => {
+  const { id } = request.body;
+  if (!id) {
+    return response.status(422).send({error: 'Please include the id of the district to delete'})
+  }
+
+  database('districts').where('id', id).del()
+    .then(districtId => {
+      if (districtId) {
+        response.status(202).json(`You deleted district ${id}`)
+      } else {
+        response.status(404).json({
+          error: `Could not find district with id ${id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).send({error})
+    })
+})
+
 
 // BUILDINGS ---------------------------------------
 
@@ -140,6 +161,30 @@ app.patch('/api/v1/buildings/:id/description', checkAuth, (request, response) =>
     .catch(error => response.status(500).json({ error }));
 });
 
+app.patch('/api/v1/buildings/:id/aka_name', checkAuth, (request, response) => {
+  const { id } = request.params;
+  const { aka_name } = request.body;
+
+  if ( !aka_name || !aka_name.length) {
+    return response.status(422).send({error: 'aka_name is required'})
+  }
+
+  database('buildings').where('id', id).select()
+    .then( result => {
+      if (result.length) {
+        database('buildings').where('id', id).update({aka_name})
+          .then(rows => {
+             return response.status(200).json(`aka_name changed successfully on ${id}`)
+          })
+      } else {
+        return response.status(404).send({error: 'That building does not exist'})
+      }
+    })
+    .catch( error => {
+      response.status(500).json({error})
+    })
+})
+
 app.post('/api/v1/buildings', checkAuth, (request, response) => {
   const payload = request.body;
   delete payload.token;
@@ -157,6 +202,27 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
       .json(`You made a building with an id of ${building[0]}`))
     .catch(error => response.status(500).json({ error }));
 });
+
+app.delete('/api/v1/buildings', checkAuth, (request, response) => {
+  const { id } = request.body;
+  if (!id) {
+    return response.status(422).send({error: 'Please include the id of the building to delete'})
+  }
+
+  database('buildings').where('id', id).del()
+    .then(buildingId => {
+      if (buildingId) {
+        response.status(202).json(`You deleted building ${id}`)
+      } else {
+        response.status(404).json({
+          error: `Could not find building with id ${id}`
+        })
+      }
+    })
+    .catch(error => {
+      response.status(500).send({error})
+    })
+})
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
