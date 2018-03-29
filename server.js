@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
@@ -8,6 +9,7 @@ app.use(bodyParser.json());
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
+const secretKey = process.env.SECRET_KEY || 'pandapuppies';
 
 app.locals.title = 'Denver History';
 
@@ -17,6 +19,22 @@ app.get('/', (request, response) => {
   response.send('Ready to explore?');
 });
 
+// AUTHENTICATION ----------------------
+
+app.post('/authenticate', (request, response) => {
+  const payload = request.body;
+
+  for (let requiredParameter of ['email', 'appName']) {
+    if (!payload[requiredParameter]) {
+      return response.status(422)
+        .send({
+          error: `Expected format: {email: <string>, appName: <string> }. You're missing an ${requiredParameter} property.`})
+    }
+  }
+  const token = jwt.sign(payload, secretKey)
+  return response.status(201).json({token})
+})
+ 
 // DISTRICTS ---------------------------
 
 app.get('/api/v1/districts', (request, response) => {
@@ -58,6 +76,7 @@ app.get('/api/v1/districts/:id/buildings', (request, response) => {
       response.status(500).json({error});
     })
 })
+
 
 // BUILDINGS ---------------------------------------
 
