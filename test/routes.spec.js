@@ -6,10 +6,17 @@ const server = require('../server');
 const configuration = require('../knexfile')['test'];
 const database = require('knex')(configuration);
 
+const goodToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZGZAdHVyaW5nLmlvIiwiYXBwTmFtZSI6ImFzZGYiLCJpYXQiOjE1MjIzMDQyMzF9.EaM2odpSnAwxczhGv0N1QWKt1uamWVsQDosDX3z-zj8';
+const badToken = 'goldfish';
+const wrongEmailToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZGZAYW9sLmNvbSIsImFwcE5hbWUiOiJhc2RmIiwiaWF0IjoxNTIyMzA0MTQ4fQ.odJ51cimjG6aXKqtTBm6GAPPFta_WPZNEm-JAbP-Olg'
+
 chai.use(chaiHttp);
 
 before(() => {
-  return database.migrate.latest()
+  return database.migrate.rollback()
+    .then(() => {
+      return database.migrate.latest()
+    })
 })
 
 beforeEach(() => {
@@ -21,6 +28,23 @@ describe('Client Routes', () => {
 });
 
 describe('API Routes', () => {
+  describe('POST /authenticate', () => {
+    it.skip('should return a status of 201 and a JWT', () => {
+      return chai.request(server)
+        .post('/authenticate')
+        .send({
+          email: 'asdf@turing.io',
+          appName: 'coolStuff'
+        })
+        .then( response => {
+          response.should.have.status(201);
+          response.should.be.an('object')
+          response.body.should.have.property('token');
+          response.body.token.should.equal('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZGZAdHVyaW5nLmlvIiwiYXBwTmFtZSI6ImNvb2xTdHVmZiIsImlhdCI6MTUyMjMxMDUwN30.PfbHv2sO5EYRJRfvNQnpKohwmdCay_y0ze96wrMBgng')
+        })
+    })
+  })
+
   describe('Districts', () => {
     describe('GET /api/v1/districts', () => {
       it('should return all districts', () => {
@@ -138,6 +162,87 @@ describe('API Routes', () => {
             response.should.have.status(404);
             response.body.error.should.equal('No buildings found')
           })
+          .catch( error => {
+            throw error;
+          })
+      })
+    })
+
+    describe('POST /api/v1/districts', () => {
+      it.skip('should create a district if the token is authorized', () => {
+        return chai.request(server)
+          .post('/api/v1/districts')
+          .send({
+            id: 2,
+            token: goodToken,
+            name: 'funky town'
+          })
+          .then( response => {
+            response.should.have.status(201);
+            response.body.should.equal('You created a district, funky town with an ID of 2')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+      it('should return a 422 error if the name is missing', () => {
+        return chai.request(server)
+          .post('/api/v1/districts')
+          .send({
+            token: goodToken
+            // name
+          })
+          .then( response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('Please name your district')
+          })
+      })
+      describe('checkAuth', () => {
+        it('should return a 403 error if there is no auth token', () => {
+          return chai.request(server)
+            .post('/api/v1/districts')
+            .send({
+              // token
+              name: 'funky town'
+            })
+            .then( response => {
+              response.should.have.status(403);
+              response.body.error.should.equal('You must be authorized to access this endpoint.')
+            })
+            .catch( error => {
+              throw error;
+            })
+        })
+        it('should return a 403 error if the token is not authorized', () => {
+          return chai.request(server)
+            .post('/api/v1/districts')
+            .send({
+              token: badToken,
+              name: 'funky town'
+            })
+            .then( response => {
+              response.should.have.status(403);
+              response.body.error.should.equal('Invalid token')
+            })
+            .catch( error => {
+              throw error;
+            })
+        })
+        it('should return a 403 error if the user is not using an authorized email', () => {
+          return chai.request(server)
+            .post('/api/v1/districts')
+            .send({
+              token: wrongEmailToken,
+              name: 'funky town'
+            })
+            .then( response => {
+              response.should.have.status(403);
+              response.body.error.should.equal('Your email is not authorized');
+            })
+            .catch( error => {
+              throw error;
+            })
+        })
       })
     })
   })
@@ -279,7 +384,10 @@ describe('API Routes', () => {
       it.skip('should return a success message when the description is changed', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/0/description')
-          .send({description: 'asdf'})
+          .send({
+            token: goodToken,
+            description: 'asdf'
+          })
           .then( response => {
             response.should.have.status(200);
             response.body.should.equal('description changed successfully')
@@ -292,6 +400,7 @@ describe('API Routes', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/0/description')
           .send({
+            token: goodToken
             // description
           })
           .then(response => {
@@ -306,6 +415,7 @@ describe('API Routes', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/0/description')
           .send({
+            token: goodToken,
             description: ''
           })
           .then(response => {
@@ -320,11 +430,44 @@ describe('API Routes', () => {
         return chai.request(server)
           .patch('/api/v1/buildings/999/description')
           .send({
+            token: goodToken,
             description: 'asdf'
           })
           .then(response => {
             response.should.have.status(404);
             response.body.error.should.equal('That building does not exist')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+    })
+
+    describe('POST /api/v1/buildings', () => {
+      it.skip('should create a new building', () => {
+        return chai.request(server)
+          .post('/api/v1/buildings')
+          .send({
+            token: goodToken,
+            aka_name: 'Nora\'s Castle'
+          })
+          .then( response => {
+            response.should.have.status(201);
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+      it('should return a 422 error if the user tries to add a key that is not approved', () => {
+        return chai.request(server)
+          .post('/api/v1/buildings')
+          .send({
+            token: goodToken,
+            groundhog: 'Phil'
+          })
+          .then (response => {
+            response.should.have.status(422);
+            response.body.error.should.equal(`Expected keys are: 'ldmk_num', 'ldmk_name', 'aka_name', 'ord_num', 'ord_year', 'address_line1', 'address_line2', 'situs_num', 'situs_dir', 'situs_st', 'situs_type', 'state_hist_num', 'year_built', 'arch_bldr', 'document', 'photo_link', 'notes', 'gis_notes', 'description', 'address_id', 'historic_dist'. You entered a groundhog property.`);
           })
           .catch( error => {
             throw error;
