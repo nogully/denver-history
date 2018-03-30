@@ -12,18 +12,6 @@ What parameters can be used in certain requests (e.g. For a POST request, what s
 
 Sample responses from endpoints (What does the response object look like for a request?)
 
-### Authentication 
-
-`POST /authenticate`
-  - Sample request: 
-  ```
-    { "email": "louisa.robbie@aol.com", 
-      "appName": "Reption" }
-  ```
-
-  - Sample response: 
-  `{ "token": "824kgalkd.o3ofalfa.2oodfkdflfl1292349" }`
-
 ### Historic Districts
 
 `GET /api/v1/districts`
@@ -46,7 +34,8 @@ Sample responses from endpoints (What does the response object look like for a r
   - Sample request: `/api/v1/districts/5/buildings`
   - Sample response yields all the buildings in the district with that `id`: 
   ```
-  [{"id":8,
+  [{
+    "id":8,
     "ldmk_num":280,
     "ldmk_name":"Kinneavy Terrace",
     "aka_name":null,
@@ -69,12 +58,13 @@ Sample responses from endpoints (What does the response object look like for a r
     "address_id":null,
     "created_at":"2018-03-27T22:03:56.670Z",
     "updated_at":"2018-03-27T22:03:56.670Z",
-    "situs_dir":null }]
+    "situs_dir":null 
+   }]
    ```
 
 #### Admin-Only Endpoints 
 
-The following district endpoints require token authentication:
+The following district endpoints require [token authentication](#admin-authentication):
 
 `POST /api/v1/districts`
   - Sample request: 
@@ -97,7 +87,7 @@ The following district endpoints require token authentication:
 ### Historic Buildings
 
 `GET /api/v1/buildings`
-  - Response is an array of all the building objects (below).
+  - Response is an array of ALL the building objects, i.e. 300+ of these:
   ```
   [
     {
@@ -131,11 +121,12 @@ The following district endpoints require token authentication:
   ```
 
 `GET /api/v1/buildings/:id`
-  - `:id` param is an integer
+  - `id` is an integer
   - Sample request: `/api/v1/buildings/188`
   - Sample response: 
   ```
-  [{"id":188,
+  [{
+    "id":188,
     "ldmk_num":311,
     "ldmk_name":"Denver Union Station",
     "aka_name":null,
@@ -158,17 +149,16 @@ The following district endpoints require token authentication:
     "address_id":null,
     "created_at":"2018-03-30T02:50:42.750Z",
     "updated_at":"2018-03-30T02:50:42.750Z",
-    "situs_dir":null}]
+    "situs_dir":null
+   }]
    ```
 
 
 #### Admin-Only Endpoints 
-
-The following building endpoints require token authentication:
+The following building endpoints require [token authentication](#admin-authentication):
 
 `POST /api/v1/buildings`
   - Parameters
-
   ```
            Name    |   Type
            `token` | <Your JSON Web Token> (Required)
@@ -297,6 +287,7 @@ The following building endpoints require token authentication:
   ```
   - Sample response: `You deleted building 3`
 
+
 ### Custom Search of Buildings
 
 `GET /api/v1/search?key=value`
@@ -305,7 +296,8 @@ The following building endpoints require token authentication:
   - Sample request: `/api/v1/search?ldmk_name=Denver+Union+Station`
   - Sample response: 
     ```
-    [{"id":188,
+    [{
+      "id":188,
       "ldmk_num":311,
       "ldmk_name":"Denver Union Station",
       "aka_name":null,
@@ -328,6 +320,21 @@ The following building endpoints require token authentication:
       "address_id":null,
       "created_at":"2018-03-30T02:50:42.750Z",
       "updated_at":"2018-03-30T02:50:42.750Z",
-      "situs_dir":null}]
+      "situs_dir":null
+    }]
     ```
         
+### Admin Authentication 
+You can post directly to the server in order to get your token.
+
+`POST /authenticate`
+  - Sample request: 
+  ```
+    { "email": "louisa.robbie@aol.com", 
+      "appName": "Reption" }
+  ```
+
+  - Sample response: 
+  `{ "token": "824kgalkd.o3ofalfa.2oodfkdflfl1292349" }`
+  
+  Happy fetching!
