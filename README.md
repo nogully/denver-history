@@ -35,6 +35,8 @@ Sample responses from endpoints (What does the response object look like for a r
 ### Buildings
 
 `GET /api/v1/buildings`
+Response
+```
 
 `GET /api/v1/buildings/:id`
 (id: integer)
