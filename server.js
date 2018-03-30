@@ -127,16 +127,16 @@ app.get('/api/v1/search', (request, response) => {
   const value = Object.values(request.query)[0];
 
   database('buildings').where(key, value).select()
-    .then(result => {
+    .then((result) => {
       if (result.length) {
         response.status(200).json(result);
       } else {
-        response.status(404).json({error: `Property '${key}' with value '${value}' not found.`})
+        response.status(404).json({ error: `Property '${key}' with value '${value}' not found.` });
       }
     })
-    .catch( error => response.status(500).send({"Database error": "Search parameters must be correctly defined. SQL says: " + error.message + ". " + "Please see documentation." }) 
-    )
-})
+    .catch(error => response.status(500)
+      .send({ 'Database error': `Search parameters must be correctly defined. SQL says: ${error.message}. Please see documentation.` }));
+});
 
 // BUILDINGS ---------------------------------------
 
