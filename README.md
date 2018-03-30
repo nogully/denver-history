@@ -17,10 +17,11 @@ Sample responses from endpoints (What does the response object look like for a r
 `POST /authenticate`
   - Sample request: 
   ```{ "email": "louisa.robbie@aol.com", 
-       "appName": "Reption" }```
+       "appName": "Reption" }
+  ```
 
   - Sample response: 
-  ```{ "token": "824kgalkd.o3ofalfa.2oodfkdflfl1292349" }```
+  `{ "token": "824kgalkd.o3ofalfa.2oodfkdflfl1292349" }`
 
 ### Historic Districts
 
@@ -34,7 +35,8 @@ Sample responses from endpoints (What does the response object look like for a r
   ```[{"id":3,
       "name":"Downtown Denver",
       "created_at":"2018-03-30T02:50:42.663Z",
-      "updated_at":"2018-03-30T02:50:42.663Z"}]```
+      "updated_at":"2018-03-30T02:50:42.663Z"}]
+  ```
 
 
 `GET /api/v1/districts/:id/buildings`
@@ -64,17 +66,28 @@ Sample responses from endpoints (What does the response object look like for a r
         "address_id":null,
         "created_at":"2018-03-27T22:03:56.670Z",
         "updated_at":"2018-03-27T22:03:56.670Z",
-        "situs_dir":null }]```
+        "situs_dir":null }]
+   ```
 
 #### District Admin-Only Endpoints 
 
 The following district endpoints require token authentication:
 
 `POST /api/v1/districts`
-(name: string) - token
+  - Sample request: 
+  ```[{ "token": "343olkdal.9jglada.2oagl2k4tkla",
+        "name":"Downtown Denver" }]
+  ```
+  - Sample response yields the new `id`
+  
 
 `DELETE /api/v1/districts`
-(id: integer) - token
+  - Sample request: 
+  ```[{ "token": "343olkdal.9jglada.2oagl2k4tkl",
+        "id":"55" }]
+  ```
+  - Sample response: 
+  `You deleted district 55`
 
 ### Historic Buildings
 
@@ -108,7 +121,8 @@ The following district endpoints require token authentication:
       "address_id":null,
       "created_at":"2018-03-30T02:50:42.750Z",
       "updated_at":"2018-03-30T02:50:42.750Z",
-      "situs_dir":null}]```
+      "situs_dir":null}]
+   ```
 
 
 #### Building Admin-Only Endpoints 
@@ -179,5 +193,6 @@ table.integer('address_id');
         "address_id":null,
         "created_at":"2018-03-30T02:50:42.750Z",
         "updated_at":"2018-03-30T02:50:42.750Z",
-        "situs_dir":null}]```
+        "situs_dir":null}]
+    ```
         
