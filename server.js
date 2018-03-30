@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -114,8 +115,8 @@ app.delete('/api/v1/districts', checkAuth, (request, response) => {
         response.status(404).send({ error: `Could not find district with id ${id}` });
       }
     })
-    .catch(error => {
-      response.status(500).send({ error: error.message })
+    .catch((error) => {
+      response.status(500).send({ error: error.message });
     });
 });
 
@@ -208,7 +209,7 @@ app.delete('/api/v1/buildings/', checkAuth, (request, response) => {
     });
   }
 
-  database('buildings').where('id', id).del()
+  return database('buildings').where('id', id).del()
     .then((buildingId) => {
       if (buildingId) {
         response.status(202).json(`You deleted building ${id}`);
@@ -220,6 +221,7 @@ app.delete('/api/v1/buildings/', checkAuth, (request, response) => {
 });
 
 app.listen(app.get('port'), () => {
+  // eslint-disable-next-line no-console
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
