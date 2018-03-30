@@ -40,11 +40,29 @@ describe('API Routes', () => {
           email: 'asdf@turing.io',
           appName: 'coolStuff'
         })
-        .then( response => {
+        .then(response => {
           response.should.have.status(201);
           response.should.be.an('object')
           response.body.should.have.property('token');
           response.body.token.should.include('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
+        })
+        .catch(error => {
+          throw error;
+        })
+    })
+    it('should return a 422 error if a parameter is not provided', () => {
+      return chai.request(server)
+        .post('/authenticate')
+        .send({
+          email: 'asdf@turing.io',
+          // appName
+        })
+        .then(response => {
+          response.should.have.status(422);
+          response.body.error.should.equal('Expected format: {email: <string>, appName: <string> }. You\'re missing an appName property.')
+        })
+        .catch(error => {
+          throw error;
         })
     })
   })
@@ -199,6 +217,9 @@ describe('API Routes', () => {
             response.should.have.status(422);
             response.body.error.should.equal('Please name your district')
           })
+          .catch(error => {
+            throw error;
+          })
       })
       describe('checkAuth', () => {
         it('should return a 403 error if there is no auth token', () => {
@@ -246,6 +267,80 @@ describe('API Routes', () => {
               throw error;
             })
         })
+      })
+    })
+
+    describe('DELETE /api/v1/districts', () => {
+      it('should delete a district with no buildings related to it', () => {
+        return chai.request(server)
+          .post('/api/v1/districts')
+          .send({
+            token: goodToken,
+            name: 'funky town'
+          })
+          .then(() => {
+            return chai.request(server)
+              .delete('/api/v1/districts')
+              .send({
+                token: goodToken,
+                id: 3
+              })
+              .then(response => {
+                response.should.have.status(202)
+                response.body.should.equal('You deleted district 3')
+              })
+              .catch(error => {
+                throw error;
+              })
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 404 error if the district does not exist', () => {
+        return chai.request(server)
+          .delete('/api/v1/districts')
+          .send({
+            token: goodToken,
+            id: 999
+          })
+          .then(response => {
+            response.should.have.status(404);
+            response.body.error.should.equal('Could not find district with id 999')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 422 error if there is no id provided', () => {
+        return chai.request(server)
+          .delete('/api/v1/districts')
+          .send({
+            token: goodToken,
+            // id
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('Please include the id of the district to delete')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 500 error if it has buildings related to it', () => {
+        return chai.request(server)
+          .delete('/api/v1/districts')
+          .send({
+            token: goodToken,
+            id: 1
+          })
+          .then(response => {
+            response.should.have.status(500);
+            response.body.error.should.equal(`delete from "districts" where "id" = $1 - update or delete on table "districts" violates foreign key constraint "buildings_historic_dist_foreign" on table "buildings"`);
+          })
+          .catch(error => {
+            throw error;
+          })
       })
     })
   })
@@ -532,6 +627,69 @@ describe('API Routes', () => {
       })
     })
 
+    describe('PATCH /api/v1/buildings/:id/aka_name', () => {
+      it('should change the aka_name of a building', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/1/aka_name')
+          .send({
+            token: goodToken,
+            akaName: 'Trattoria di Nora'
+          })
+          .then(response => {
+            response.should.have.status(200);
+            response.body.should.equal('aka_name changed successfully on 1')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 404 if the target building does not exist', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/999/aka_name')
+          .send({
+            token: goodToken,
+            akaName: 'Casa de Nora'
+          })
+          .then(response => {
+            response.should.have.status(404);
+            response.body.error.should.equal('That building does not exist')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 422 if there is no aka_name provided', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/1/aka_name')
+          .send({
+            token: goodToken,
+            // akaName
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('aka_name is required')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 422 if the aka_name provided is empty', () => {
+        return chai.request(server)
+          .patch('/api/v1/buildings/1/aka_name')
+          .send({
+            token: goodToken,
+            akaName: ''
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('aka_name is required')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+    })
+
     describe('POST /api/v1/buildings', () => {
       it('should create a new building', () => {
         return chai.request(server)
@@ -547,18 +705,66 @@ describe('API Routes', () => {
             throw error;
           })
       })
-      it('should return a 422 error if the user tries to add a key that is not approved', () => {
+      it.skip('should return a 422 error if the user tries to add a key that is not approved', () => {
         return chai.request(server)
           .post('/api/v1/buildings')
           .send({
             token: goodToken,
-            groundhog: 'Phil'
+            asdf: 'Phil'
           })
-          .then (response => {
+          .then(response => {
             response.should.have.status(422);
             response.body.error.should.equal(`Expected keys are: 'ldmk_num', 'ldmk_name', 'aka_name', 'ord_num', 'ord_year', 'address_line1', 'address_line2', 'situs_num', 'situs_dir', 'situs_st', 'situs_type', 'state_hist_num', 'year_built', 'arch_bldr', 'document', 'photo_link', 'notes', 'gis_notes', 'description', 'address_id', 'historic_dist'. You entered a groundhog property.`);
           })
           .catch( error => {
+            throw error;
+          })
+      })
+    })
+
+    describe('DELETE /api/v1/buildings/', () => {
+      it('should delete a building', () => {
+        return chai.request(server)
+          .delete('/api/v1/buildings')
+          .send({ 
+            token: goodToken,
+            id: 1
+          })
+          .then(response => {
+            response.should.have.status(202);
+            response.body.should.equal('You deleted building 1')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 404 if the building doesnt exist', () => {
+        return chai.request(server)
+          .delete('/api/v1/buildings')
+          .send({
+            token: goodToken,
+            id: 999
+          })
+          .then(response => {
+            response.should.have.status(404);
+            response.body.error.should.equal('Could not find building with id 999')
+          })
+          .catch(error => {
+            throw error;
+          })
+      })
+      it('should return a 422 if there is no id included', () => {
+        return chai.request(server)
+          .delete('/api/v1/buildings')
+          .send({
+            token: goodToken
+            // id:
+          })
+          .then(response => {
+            response.should.have.status(422);
+            response.body.error.should.equal('Please include the id of the building to delete')
+          })
+          .catch(error => {
             throw error;
           })
       })
