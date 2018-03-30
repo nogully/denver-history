@@ -12,29 +12,87 @@ What parameters can be used in certain requests (e.g. For a POST request, what s
 
 Sample responses from endpoints (What does the response object look like for a request?)
 
-### Authentication
+### Authentication 
 
 `POST /authenticate`
+  - Sample request: 
+  ```{ "email": "louisa.robbie@aol.com", 
+       "appName": "Reption" }
+  ```
 
-### Districts
+  - Sample response: 
+  `{ "token": "824kgalkd.o3ofalfa.2oodfkdflfl1292349" }`
+
+### Historic Districts
 
 `GET /api/v1/districts`
+  - This will return an array of all the districts
 
 `GET /api/v1/districts/:id`
-(id: integer)
+  - `id` is an integer
+  - Sample request: `/api/v1/districts/3`
+  - Sample response yields the district with that `id`: 
+  ```[{"id":3,
+      "name":"Downtown Denver",
+      "created_at":"2018-03-30T02:50:42.663Z",
+      "updated_at":"2018-03-30T02:50:42.663Z"}]
+  ```
+
 
 `GET /api/v1/districts/:id/buildings`
-(id: integer)
+  - `id` is an integer
+  - Sample request: `/api/v1/districts/5/buildings`
+  - Sample response yields all the buildings in the district with that `id`: 
+  ```[{ "id":8,
+        "ldmk_num":280,
+        "ldmk_name":"Kinneavy Terrace",
+        "aka_name":null,
+        "ord_num":430,
+        "ord_year":1997,
+        "address_line1":"2700-2714 Stout Street, 721-727 27th Street",
+        "address_line2":null,
+        "situs_num":2700,
+        "situs_st":"Stout",
+        "situs_type":"ST",
+        "historic_dist":5,
+        "state_hist_num":null,
+        "year_built":"c. 1888",
+        "arch_bldr":null,
+        "document":null,
+        "photo_link":"yes",
+        "notes":null,
+        "gis_notes":null,
+        "description":null,
+        "address_id":null,
+        "created_at":"2018-03-27T22:03:56.670Z",
+        "updated_at":"2018-03-27T22:03:56.670Z",
+        "situs_dir":null }]
+   ```
+
+#### District Admin-Only Endpoints 
+
+The following district endpoints require token authentication:
 
 `POST /api/v1/districts`
-(name: string) - token
+  - Sample request: 
+  ```[{ "token": "343olkdal.9jglada.2oagl2k4tkla",
+        "name":"Downtown Denver" }]
+  ```
+  - Sample response yields the new `id`
+  
 
 `DELETE /api/v1/districts`
-(id: integer) - token
+  - Sample request: 
+  ```[{ "token": "343olkdal.9jglada.2oagl2k4tkl",
+        "id":"55" }]
+  ```
+  - Sample response: 
+  `You deleted district 55`
 
-### Buildings
+### Historic Buildings
 
 `GET /api/v1/buildings`
+
 Response
 ```
 [
@@ -94,53 +152,42 @@ Response
 ]
 ```
 
+  - Response is an array of all the building objects (below).
+
 `GET /api/v1/buildings/:id`
+  - `:id` param is an integer
+  - Sample request: `/api/v1/buildings/188`
+  - Sample response: 
+  ```[{"id":188,
+      "ldmk_num":311,
+      "ldmk_name":"Denver Union Station",
+      "aka_name":null,
+      "ord_num":705,
+      "ord_year":2004,
+      "address_line1":"1701-1777 Wynkoop Street",
+      "address_line2":null,
+      "situs_num":1701,
+      "situs_st":"Wynkoop",
+      "situs_type":"ST",
+      "historic_dist":9,
+      "state_hist_num":"5DV.114",
+      "year_built":"1881, 1894 and 1914",
+      "arch_bldr":null,
+      "document":null,
+      "photo_link":"yes",
+      "notes":null,
+      "gis_notes":null,
+      "description":null,
+      "address_id":null,
+      "created_at":"2018-03-30T02:50:42.750Z",
+      "updated_at":"2018-03-30T02:50:42.750Z",
+      "situs_dir":null}]
+   ```
 
-Parameters
 
-```
-Name |   Type    | Required?
-`id` | `integer` |  `yes`
-```
+#### Building Admin-Only Endpoints 
 
-Example
-
-```
-fetch('https://denver-history.herokuapp.com/api/v1/buildings/1')
-```
-
-Response
-
-```
-[
-  {
-    "id": 1,
-    "ldmk_num": 93,
-    "ldmk_name": "1437 High Street",
-    "aka_name": "Watson House",
-    "ord_num": 293,
-    "ord_year": 1976,
-    "address_line1": "1437 High Street",
-    "address_line2": null,
-    "situs_num": 1437,
-    "situs_st": "High",
-    "situs_type": "ST",
-    "historic_dist": 1,
-    "state_hist_num": "5DV.5811",
-    "year_built": "1894",
-    "arch_bldr": null,
-    "document": null,
-    "photo_link": "yes",
-    "notes": null,
-    "gis_notes": null,
-    "description": null,
-    "address_id": null,
-    "created_at": "2018-03-29T17:45:23.959Z",
-    "updated_at": "2018-03-29T17:45:23.959Z",
-    "situs_dir": null
-  }
-]
-```
+The following building endpoints require token authentication:
 
 `POST /api/v1/buildings`
 
@@ -239,7 +286,36 @@ Response
 `DELETE /api/v1/buildings`
 (id: integer) - token
 
-### Search
+### Custom Search
 
-`GET /api/v1/search`
-(query parameters: key, value)
+`GET /api/v1/search?key=value`
+  - `key` parameter is a string representing a key from the above building objects
+  - `value` parameter represents the value you are searching for
+  - Sample request: `/api/v1/search?ldmk_name=Denver+Union+Station`
+  - Sample response: 
+    ```[{"id":188,
+        "ldmk_num":311,
+        "ldmk_name":"Denver Union Station",
+        "aka_name":null,
+        "ord_num":705,
+        "ord_year":2004,
+        "address_line1":"1701-1777 Wynkoop Street",
+        "address_line2":null,
+        "situs_num":1701,
+        "situs_st":"Wynkoop",
+        "situs_type":"ST",
+        "historic_dist":9,
+        "state_hist_num":"5DV.114",
+        "year_built":"1881, 1894 and 1914",
+        "arch_bldr":null,
+        "document":null,
+        "photo_link":"yes",
+        "notes":null,
+        "gis_notes":null,
+        "description":null,
+        "address_id":null,
+        "created_at":"2018-03-30T02:50:42.750Z",
+        "updated_at":"2018-03-30T02:50:42.750Z",
+        "situs_dir":null}]
+    ```
+        
