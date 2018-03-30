@@ -5,6 +5,8 @@ services:
 - postgresql
 before_script:
 - psql -c 'create database denver_history_test;' -U postgres
+script: 
+- npm run eslint
 notifications:
 - email: false
 deploy:
