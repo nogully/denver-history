@@ -92,6 +92,66 @@ The following district endpoints require token authentication:
 ### Historic Buildings
 
 `GET /api/v1/buildings`
+
+Response
+```
+[
+  {
+    "id": 1,
+    "ldmk_num": 93,
+    "ldmk_name": "1437 High Street",
+    "aka_name": "Watson House",
+    "ord_num": 293,
+    "ord_year": 1976,
+    "address_line1": "1437 High Street",
+    "address_line2": null,
+    "situs_num": 1437,
+    "situs_st": "High",
+    "situs_type": "ST",
+    "historic_dist": 1,
+    "state_hist_num": "5DV.5811",
+    "year_built": "1894",
+    "arch_bldr": null,
+    "document": null,
+    "photo_link": "yes",
+    "notes": null,
+    "gis_notes": null,
+    "description": null,
+    "address_id": null,
+    "created_at": "2018-03-29T17:45:23.959Z",
+    "updated_at": "2018-03-29T17:45:23.959Z",
+    "situs_dir": null
+  },
+  {
+    "id": 2,
+    "ldmk_num": 94,
+    "ldmk_name": "Kerr House",
+    "aka_name": null,
+    "ord_num": 360,
+    "ord_year": 1976,
+    "address_line1": "1900 E. 7th Avenue Parkway",
+    "address_line2": null,
+    "situs_num": 1900,
+    "situs_st": "7th Avenue",
+    "situs_type": "PKY",
+    "historic_dist": 2,
+    "state_hist_num": "5DV.751",
+    "year_built": "1925",
+    "arch_bldr": null,
+    "document": null,
+    "photo_link": "yes",
+    "notes": null,
+    "gis_notes": null,
+    "description": null,
+    "address_id": null,
+    "created_at": "2018-03-29T17:45:23.959Z",
+    "updated_at": "2018-03-29T17:45:23.959Z",
+    "situs_dir": "E"
+  },
+  ...
+]
+```
+
   - Response is an array of all the building objects (below).
 
 `GET /api/v1/buildings/:id`
@@ -130,29 +190,92 @@ The following district endpoints require token authentication:
 The following building endpoints require token authentication:
 
 `POST /api/v1/buildings`
-table.float('ldmk_num');
-table.string('ldmk_name');
-table.string('aka_name');
-table.integer('ord_num');
-table.integer('ord_year');
-table.string('address_line1');
-table.string('address_line2');
-table.integer('situs_num');
-table.string('situs_st');
-table.string('situs_type');
-table.integer('historic_dist');
-table.foreign('historic_dist')
-  .references('districts.id');
-table.string('state_hist_num');
-table.string('year_built');
-table.string('arch_bldr');
-table.string('document');
-table.string('photo_link');
-table.string('notes');
-table.string('gis_notes');
-table.string('description');
-table.integer('address_id');
--token
+
+Parameters
+
+```
+         Name    |   Type
+         `token` | <Your JSON Web Token> (Required)
+// All of the following parameters are optional
+// Any parameters not specified default to `null`
+      `ldmk_num` | `float`
+     `ldmk_name` | `string`
+      `aka_name` | `string`
+       `ord_num` | `integer`
+      `ord_year` | `integer`
+ `address_line1` | `string`
+ `address_line2` | `string`
+     `situs_num` | `integer`
+      `situs_st` | `string`
+    `situs_type` | `string`
+ `historic_dist` | `integer`
+`state_hist_num` | `string`
+    `year_built` | `string`
+     `arch_bldr` | `string`
+      `document` | `string`
+    `photo_link` | `string`
+         `notes` | `string`
+     `gis_notes` | `string`
+   `description` | `string`
+    `address_id` | `integer`
+```
+
+Example
+
+This Post Request
+
+```
+fetch('https://denver-history.herokuapp.com/api/v1/buildings', {
+  method: POST,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: {
+    token: <Your Access Token>,
+    aka_name: 'Chez Nora',
+    address_line1: '123 Fake St',
+    historic_dist: 3,
+    description: 'Simply the best place ever'
+  }
+})
+```
+
+Creates this object
+
+```
+[
+  {
+                "id": 5,
+          "ldmk_num": null,
+         "ldmk_name": null,
+          "aka_name": "Chez Nora",
+           "ord_num": null,
+          "ord_year": null,
+     "address_line1": "123 Fake St",
+     "address_line2": null,
+         "situs_num": null,
+          "situs_st": null,
+        "situs_type": null,
+     "historic_dist": 3,
+    "state_hist_num": null,
+        "year_built": null,
+         "arch_bldr": null,
+          "document": null,
+        "photo_link": null,
+             "notes": null,
+         "gis_notes": null,
+       "description": 'Simply the best place ever',
+        "address_id": null,
+        "created_at": "2018-03-29T17:45:23.959Z",
+        "updated_at": "2018-03-29T17:45:23.959Z",
+         "situs_dir": null
+  }
+]
+```
+
+Response
+
+`You made a building with an id of 5`
 
 `PATCH /api/v1/buildings/:id/description`
 (id: integer, description: string) -token
