@@ -250,6 +250,92 @@ describe('API Routes', () => {
     })
   })
 
+  describe('Search', () => {
+    describe('GET /api/v1/search', () => {
+      it('should accept search queries from the user', () => {
+        return chai.request(server)
+          .get('/api/v1/search?aka_name=Watson+House')
+          .then(response => {
+            response.should.have.status(200);
+            response.should.be.json;
+            response.body.should.be.an('array');
+            response.body.length.should.equal(1);
+            response.body[0].should.have.property('id');
+            response.body[0].id.should.equal(1);
+            response.body[0].should.have.property('ldmk_num');
+            response.body[0].ldmk_num.should.equal(93);
+            response.body[0].should.have.property('ldmk_name');
+            response.body[0].ldmk_name.should.equal('1437 High Street');
+            response.body[0].should.have.property('aka_name');
+            response.body[0].aka_name.should.equal('Watson House');
+            response.body[0].should.have.property('ord_num');
+            response.body[0].ord_num.should.equal(293);
+            response.body[0].should.have.property('ord_year');
+            response.body[0].ord_year.should.equal(1976);
+            response.body[0].should.have.property('address_line1');
+            response.body[0].address_line1.should.equal('1437 High Street');
+            response.body[0].should.have.property('address_line2');
+            // response.body[0].address_line2.should.equal(null);
+            response.body[0].should.have.property('situs_num');
+            response.body[0].situs_num.should.equal(1437);
+            response.body[0].should.have.property('situs_dir');
+            // response.body[0].situs_dir.should.equal(null);
+            response.body[0].should.have.property('situs_st');
+            response.body[0].situs_st.should.equal('High');
+            response.body[0].should.have.property('situs_type');
+            response.body[0].situs_type.should.equal('ST');
+            response.body[0].should.have.property('historic_dist');
+            response.body[0].historic_dist.should.equal(1);
+            response.body[0].should.have.property('state_hist_num');
+            response.body[0].state_hist_num.should.equal('5DV.5811');
+            response.body[0].should.have.property('year_built');
+            response.body[0].year_built.should.equal('1894');
+            response.body[0].should.have.property('arch_bldr');
+            // response.body[0].arch_bldr.should.equal(null);
+            response.body[0].should.have.property('document');
+            // response.body[0].document.should.equal(null);
+            response.body[0].should.have.property('photo_link');
+            response.body[0].photo_link.should.equal('yes');
+            response.body[0].should.have.property('notes');
+            // response.body[0].notes.should.equal(null);
+            response.body[0].should.have.property('gis_notes');
+            // response.body[0].gis_notes.should.equal(null);
+            response.body[0].should.have.property('description');
+            // response.body[0].description.should.equal(null);
+            response.body[0].should.have.property('address_id');
+            // response.body[0].address_id.should.equal(null);
+          })
+          .catch(error => {
+            throw error;
+          });
+      })
+      it('should return a nice error if the query is missing parameters', () => {
+        return chai.request(server)
+          .get('/api/v1/search?burritos=tasty')
+          .then(response => {
+            response.should.have.status(500);
+            response.should.be.json;
+            response.body["Database error"].should.equal(`Search parameters must be correctly defined. SQL says: select * from \"buildings\" where \"burritos\" = $1 - column \"burritos\" does not exist. Please see documentation.`)
+          })
+          .catch(error => {
+            throw error;
+          });
+      })
+      it('should return a nice error if that database column exists but nothing matches the search', () => {
+        return chai.request(server)
+          .get('/api/v1/search?aka_name=Chez+Nora')
+          .then(response => {
+            response.should.have.status(404);
+            response.should.be.json;
+            response.body.error.should.equal("Property 'aka_name' with value 'Chez Nora' not found.")
+          })
+          .catch(error => {
+            throw error;
+          });
+      })
+    })
+  })
+
   describe('Buildings', () => {
     describe('GET /api/v1/buildings', () => {
       it('should return all buildings', () => {
