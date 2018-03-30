@@ -111,10 +111,12 @@ app.delete('/api/v1/districts', checkAuth, (request, response) => {
       if (districtId) {
         response.status(202).json(`You deleted district ${id}`);
       } else {
-        response.status(404).json({ error: `Could not find district with id ${id}` });
+        response.status(404).send({ error: `Could not find district with id ${id}` });
       }
     })
-    .catch(error => response.status(500).send({ error }));
+    .catch(error => {
+      response.status(500).send({ error: error.message })
+    });
 });
 
 
@@ -195,10 +197,10 @@ app.post('/api/v1/buildings', checkAuth, (request, response) => {
   database('buildings').insert(payload, 'id')
     .then(building => response.status(201)
       .json(`You made a building with an id of ${building[0]}`))
-    .catch(error => response.status(500).json({ error }));
+    .catch(error => response.status(500).send({ error }));
 });
 
-app.delete('/api/v1/buildings', checkAuth, (request, response) => {
+app.delete('/api/v1/buildings/', checkAuth, (request, response) => {
   const { id } = request.body;
   if (!id) {
     return response.status(422).send({
@@ -211,7 +213,7 @@ app.delete('/api/v1/buildings', checkAuth, (request, response) => {
       if (buildingId) {
         response.status(202).json(`You deleted building ${id}`);
       } else {
-        response.status(404).json({ error: `Could not find building with id ${id}` });
+        response.status(404).send({ error: `Could not find building with id ${id}` });
       }
     })
     .catch(error => response.status(500).send({ error }));
