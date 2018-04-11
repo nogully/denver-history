@@ -190,6 +190,39 @@ describe('API Routes', () => {
       })
     })
 
+    describe('GET /api/v1/districts/:id/buildings/map', () => {
+      it('should return all buildings from a specific district', () => {
+        return chai.request(server)
+          .get('/api/v1/districts/1/buildings/map')
+          .then(response => {
+            response.should.have.status(200);
+            response.body[0].should.have.property('id');
+            response.body[0].id.should.equal(1);
+            response.body[0].should.have.property('ldmk_name');
+            response.body[0].ldmk_name.should.equal('1437 High Street');
+            response.body[0].should.have.property('aka_name');
+            response.body[0].aka_name.should.equal('Watson House');
+            response.body[0].should.have.property('lat');
+            response.body[0].should.have.property('lon');
+            response.body[0].should.have.property('year_built');
+            response.body[0].year_built.should.equal('1894');
+            response.body[0].should.have.property('ldmk_num');
+            response.body[0].ldmk_num.should.equal(93);
+          })
+      })
+      it('should return a 404 error if there are no buildings in a district', () => {
+        return chai.request(server)
+          .get('/api/v1/districts/999/buildings')
+          .then(response => {
+            response.should.have.status(404);
+            response.body.error.should.equal('No buildings found')
+          })
+          .catch( error => {
+            throw error;
+          })
+      })
+    })
+
     describe('POST /api/v1/districts', () => {
       it('should create a district if the token is authorized', () => {
         return chai.request(server)
