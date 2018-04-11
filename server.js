@@ -87,6 +87,22 @@ app.get('/api/v1/districts/:id/buildings', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
+app.get('/api/v1/districts/:id/buildings/map', (request, response) => {
+  const { id } = request.params;
+
+  database('buildings').where('historic_dist', id).select()
+    .then((buildings) => {
+      if (buildings.length) {
+        const map = buildings.map(({ lat, lon, ldmk_name, year_built, ldmk_num, id }) => ({ lat, lon, ldmk_name, year_built, ldmk_num, id }));
+        response.status(200).json(map);
+      } else {
+        response.status(404).send({ error: 'No buildings found' });
+      }
+    })
+    .catch(error => response.status(500).json({ error }));
+});
+
+
 app.post('/api/v1/districts', checkAuth, (request, response) => {
   const { name } = request.body;
 
