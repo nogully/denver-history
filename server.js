@@ -1,4 +1,6 @@
 /* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/* eslint-disable no-shadow */
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -93,7 +95,24 @@ app.get('/api/v1/districts/:id/buildings/map', (request, response) => {
   database('buildings').where('historic_dist', id).select()
     .then((buildings) => {
       if (buildings.length) {
-        const map = buildings.map(({ lat, lon, ldmk_name, aka_name, year_built, ldmk_num, id }) => ({ lat, lon, ldmk_name, aka_name, year_built, ldmk_num, id }));
+        const map = buildings.map(({
+          lat,
+          lon,
+          ldmk_name,
+          aka_name,
+          year_built,
+          ldmk_num,
+          id,
+        }) => ({
+          lat,
+          lon,
+          ldmk_name,
+          aka_name,
+          year_built,
+          ldmk_num,
+          id,
+        }));
+
         response.status(200).json(map);
       } else {
         response.status(404).send({ error: 'No buildings found' });
