@@ -27,7 +27,7 @@ exports.up = function(knex, Promise) {
       table.string('photo_link');
       table.string('notes');
       table.string('gis_notes');
-      table.string('description');
+      table.string('description', 2000);
       table.integer('address_id');
       table.timestamps(true, true);
     })
