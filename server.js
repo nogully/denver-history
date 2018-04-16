@@ -115,6 +115,8 @@ app.get('/api/v1/districts/:id/buildings/map', (request, response) => {
           year_built,
           ldmk_num,
           id,
+          description, 
+          photo_link,
         }) => ({
           lat,
           lon,
@@ -123,6 +125,8 @@ app.get('/api/v1/districts/:id/buildings/map', (request, response) => {
           year_built,
           ldmk_num,
           id,
+          description, 
+          photo_link,
         }));
 
         response.status(200).json(map);
