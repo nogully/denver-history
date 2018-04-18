@@ -21,7 +21,7 @@ app.locals.title = 'Denver History';
 app.use(express.static('public'));
 
 app.use((req, res, next) => {
-  const allowedOrigins = ['http://localhost:3000'];
+  const allowedOrigins = ['http://localhost:3000', 'http://historicdenver.surge.sh/', 'https://historicdenver.surge.sh/'];
   const { origin } = req.headers;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
