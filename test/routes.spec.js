@@ -163,7 +163,6 @@ describe('API Routes', () => {
             response.body[0].should.have.property('document');
             // response.body[0].document.should.equal(null);
             response.body[0].should.have.property('photo_link');
-            response.body[0].photo_link.should.equal('yes');
             response.body[0].should.have.property('notes');
             // response.body[0].notes.should.equal(null);
             response.body[0].should.have.property('gis_notes');
@@ -423,7 +422,6 @@ describe('API Routes', () => {
             response.body[0].should.have.property('document');
             // response.body[0].document.should.equal(null);
             response.body[0].should.have.property('photo_link');
-            response.body[0].photo_link.should.equal('yes');
             response.body[0].should.have.property('notes');
             // response.body[0].notes.should.equal(null);
             response.body[0].should.have.property('gis_notes');
@@ -509,7 +507,6 @@ describe('API Routes', () => {
             response.body[0].should.have.property('document');
             // response.body[0].document.should.equal(null);
             response.body[0].should.have.property('photo_link');
-            response.body[0].photo_link.should.equal('yes');
             response.body[0].should.have.property('notes');
             // response.body[0].notes.should.equal(null);
             response.body[0].should.have.property('gis_notes');
@@ -570,7 +567,6 @@ describe('API Routes', () => {
             response.body[0].should.have.property('document');
             // response.body[0].document.should.equal(null);
             response.body[0].should.have.property('photo_link');
-            response.body[0].photo_link.should.equal('yes');
             response.body[0].should.have.property('notes');
             // response.body[0].notes.should.equal(null);
             response.body[0].should.have.property('gis_notes');

@@ -21,7 +21,6 @@ exports.seed = (knex, Promise) => {
                 ADDRESS_LINE1, ADDRESS_LINE2, SITUS_NUM, SITUS_DIR,
                 SITUS_ST, SITUS_TYPE, STATE_HIST_NUM, YEAR_BUILT, ARCH_BLDR,
                 DOCUMENT, PHOTO_LINK, NOTES, GIS_NOTES, DESCRIPTION, ADDRESS_ID } = building;
-
               return {
                 ldmk_num: LDMK_NUM,
                 ldmk_name: LDMK_NAME,
@@ -38,7 +37,6 @@ exports.seed = (knex, Promise) => {
                 year_built: YEAR_BUILT,
                 arch_bldr: ARCH_BLDR,
                 document: DOCUMENT,
-                photo_link: PHOTO_LINK,
                 notes: NOTES,
                 gis_notes: GIS_NOTES,
                 description: DESCRIPTION,

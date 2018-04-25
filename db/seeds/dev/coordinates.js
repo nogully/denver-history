@@ -10,7 +10,7 @@ exports.seed = function(knex, Promise) {
               "lat" : LAT, 
               "lon" : LON, 
               "photo_link" : PHOTO_LINK,
-              "description" : DESCRIPTION
+              "description": DESCRIPTION
             })
         }))
       })
