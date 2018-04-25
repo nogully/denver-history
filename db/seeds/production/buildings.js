@@ -38,7 +38,6 @@ exports.seed = (knex, Promise) => {
                 year_built: YEAR_BUILT,
                 arch_bldr: ARCH_BLDR,
                 document: DOCUMENT,
-                photo_link: PHOTO_LINK,
                 notes: NOTES,
                 gis_notes: GIS_NOTES,
                 description: DESCRIPTION,
