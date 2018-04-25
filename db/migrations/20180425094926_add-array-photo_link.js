@@ -2,7 +2,7 @@
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.table('buildings', table => {
-      table.specificType('photo_link', 'text[]');
+      table.specificType('photo_link', 'text[]', 1000);
     })
   ])
 };
